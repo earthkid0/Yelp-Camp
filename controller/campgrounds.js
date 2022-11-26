@@ -1,4 +1,10 @@
 const Campground = require('../models/campground');
+const { cloudinary } = require('../cloudinary')
+const mbxGeoCoding = require("@mapbox/mapbox-sdk/services/geocoding");
+
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+
+const geocode = mbxGeoCoding({ accessToken: mapBoxToken })
 
 module.exports.render = async (req, res) => {
     const campgrounds = await Campground.find({});
@@ -10,13 +16,18 @@ module.exports.newRender = (req, res) => {
 }
 
 module.exports.newCamp = async (req, res) => {
-    const campground = new Campground(req.body.campground);
-    campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    campground.author = req.user._id;
-    await campground.save();
-    console.log(campground)
-    req.flash('success', 'campground made success.');
-    res.redirect(`/campgrounds/${campground.id}`);
+    const geoData = await geocode.forwardGeocode({
+        query: req.body.campground.location,
+        limit: 1
+    }).send()
+    res.send(geoData.body.features[0].geometry.coordinates)
+    // const campground = new Campground(req.body.campground);
+    // campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    // campground.author = req.user._id;
+    // await campground.save();
+    // console.log(campground)
+    // req.flash('success', 'campground made success.');
+    // res.redirect(`/campgrounds/${campground.id}`);
 }
 
 module.exports.showRender = async (req, res) => {
@@ -46,6 +57,13 @@ module.exports.editCamp = async (req, res) => {
     const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
     campground.images.push(...imgs)
     await campground.save()
+    console.log(req.body)
+    if (req.body.deleteImages) {
+        for (let filename of req.body.deleteImages) {
+            await cloudinary.uploader.destroy(filename);
+        }
+        await campground.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } });
+    }
     req.flash('success', 'campground update success.');
     res.redirect(`/campgrounds/${id}`)
 }
