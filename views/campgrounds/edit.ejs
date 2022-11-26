@@ -21,14 +21,20 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label class="form-label" for="image">Image Url</label>
-                <input type="file" name="image" id="image" multiple>
-                <div class="valid-feedback">
-                    Looks good!
-                </div>
+                <label class="form-label" for="image">add more image(s)</label>
+                <input type="file" class="form-control" aria-label="file example" id="image" name="image" multiple>
+                <div class="valid-feedback">looks Good!</div>
             </div>
+            <div class="mb3">
+                <% campground.images.forEach((img, i) => { %>
+                <div class="form-check-inline">
+                    <input type="checkbox" name="deleteImages[]" id="image-<%= i %>" value="<%= img.filename %>">
+                    <label for="image-<%= i %>">delete</label>
+                </div>
+                <img src="<%= img.thumbnail %>" class="img-thumbnail" alt="">
+                <% }) %>
 
-
+            </div>
             <div class="mb-3">
                 <label class="form-label" for="price">Campground Price</label>
                 <div class="input-group">
