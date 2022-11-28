@@ -22,6 +22,13 @@ const seedDB = async () => {
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
             price: randomPrice,
+            geometry: {
+                type: "Point",
+                coordinates: [
+                    cities[random1000].longitude,
+                    cities[random1000].latitude
+                ]
+            },
             description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio quidem, provident quas quibusdam doloribus nihil cumque. Earum, dolores iusto! Quas perferendis id dolore enim doloremque rem nemo repudiandae optio porro!',
             images: [{
                 url: "https://res.cloudinary.com/dn8qwg595/image/upload/v1668873048/YelpCamp/oavbnqgz4xyw2u8mmfy4.gif",
