@@ -1,13 +1,15 @@
-<%- layout('/layouts/boiler') %>
+<%- layout('layouts/boiler')%>
+
 <div class="row">
     <div class="col-8 offset-2">
         <div class="alert alert-danger" role="alert">
             <h4 class="alert-heading"><%= err.statusCode %> Error!!</h4>
             <h3 class="alert-heading"><%= err.message %> </h3>
-            <hr>
+            <% if (process.env.NODE_ENV !== "production") { %>
             <div class="mb-0">
                 <%= err.stack %>
             </div>
+            <% } %>
         </div>
     </div>
 </div>
